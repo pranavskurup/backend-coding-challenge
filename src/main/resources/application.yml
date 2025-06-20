@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: movie-rating-system
+
+  # Database Configuration
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/movierating
+    username: movierating
+    password: movierating
+
+  # Flyway Configuration
+  flyway:
+    url: jdbc:postgresql://localhost:5432/movierating
+    user: movierating
+    password: movierating
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+
+# Logging Configuration
+logging:
+  level:
+    org.flywaydb: INFO
+    io.r2dbc.postgresql.QUERY: DEBUG
+    io.r2dbc.postgresql.PARAM: DEBUG
