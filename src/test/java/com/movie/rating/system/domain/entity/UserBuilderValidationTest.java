@@ -18,7 +18,7 @@ class UserBuilderValidationTest {
                 .build();
 
         assertNotNull(user);
-        assertNotNull(user.getId());
+        assertNull(user.getId());
         assertEquals("testuser", user.getUsername());
         assertEquals("test@example.com", user.getEmail());
         assertEquals("hashedpassword", user.getPasswordHash());
@@ -60,7 +60,7 @@ class UserBuilderValidationTest {
     }
 
     @Test
-    void shouldAutoGenerateIdWhenNotProvided() {
+    void shouldNotGenerateIdWhenNotProvided() {
         User user1 = User.builder()
                 .username("testuser1")
                 .email("test1@example.com")
@@ -73,15 +73,14 @@ class UserBuilderValidationTest {
                 .passwordHash("hashedpassword")
                 .build();
 
-        assertNotNull(user1.getId());
-        assertNotNull(user2.getId());
-        assertNotEquals(user1.getId(), user2.getId());
+        assertNull(user1.getId());
+        assertNull(user2.getId());
     }
 
     @Test
     void shouldAutoGenerateTimestampsWhenNotProvided() {
         Instant before = Instant.now().minusSeconds(1);
-        
+
         User user = User.builder()
                 .username("testuser")
                 .email("test@example.com")

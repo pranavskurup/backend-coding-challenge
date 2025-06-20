@@ -48,13 +48,9 @@ public class User {
                 if (super.updatedAt == null) {
                     super.updatedAt = super.createdAt;
                 }
-                if (super.id == null) {
-                    super.id = UUID.randomUUID();
-                }
                 validateEmail(super.email);
                 validateUsername(super.username);
                 // Validate required fields
-                Objects.requireNonNull(super.id, "User ID cannot be null");
                 Objects.requireNonNull(super.username, "Username cannot be null");
                 Objects.requireNonNull(super.email, "Email cannot be null");
                 Objects.requireNonNull(super.passwordHash, "Password hash cannot be null");

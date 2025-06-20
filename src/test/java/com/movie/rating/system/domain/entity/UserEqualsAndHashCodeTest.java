@@ -11,7 +11,7 @@ class UserEqualsAndHashCodeTest {
     @Test
     void shouldBeEqualWhenSameId() {
         UUID id = UUID.randomUUID();
-        
+
         User user1 = User.builder()
                 .id(id)
                 .username("testuser1")
@@ -33,12 +33,14 @@ class UserEqualsAndHashCodeTest {
     @Test
     void shouldNotBeEqualWhenDifferentId() {
         User user1 = User.builder()
+                .id(UUID.randomUUID())
                 .username("testuser")
                 .email("test@example.com")
                 .passwordHash("hashedpassword")
                 .build();
 
         User user2 = User.builder()
+                .id(UUID.randomUUID())
                 .username("testuser")
                 .email("test@example.com")
                 .passwordHash("hashedpassword")
