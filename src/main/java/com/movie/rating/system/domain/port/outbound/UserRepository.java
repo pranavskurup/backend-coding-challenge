@@ -84,4 +84,11 @@ public interface UserRepository {
      * @return Mono<Long> containing the count
      */
     Mono<Long> countActiveUsers();
+
+    /**
+     * Search users by username pattern (case insensitive)
+     * @param pattern the search pattern
+     * @return Flux containing matching users
+     */
+    Flux<User> searchByUsernamePattern(String pattern);
 }

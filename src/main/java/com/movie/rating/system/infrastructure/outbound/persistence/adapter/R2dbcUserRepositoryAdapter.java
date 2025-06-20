@@ -225,4 +225,19 @@ public class R2dbcUserRepositoryAdapter implements UserRepository {
                 .doOnSuccess(result -> log.debug("Successfully deleted user with ID: {}", user.getId()))
                 .doOnError(error -> log.error("Failed to delete user with ID: {}", user.getId(), error));
     }
+
+    /**
+     * Searches users by username pattern (case insensitive).
+     *
+     * @param pattern the search pattern
+     * @return Flux containing matching users
+     */
+    public Flux<User> searchByUsernamePattern(String pattern) {
+        log.debug("Searching users by username pattern: {}", pattern);
+
+        return repository.findByUsernameContainingIgnoreCase(pattern)
+                .map(mapper::toDomain)
+                .doOnComplete(() -> log.debug("Successfully completed search for pattern: {}", pattern))
+                .doOnError(error -> log.error("Failed to search users with pattern: {}", pattern, error));
+    }
 }
