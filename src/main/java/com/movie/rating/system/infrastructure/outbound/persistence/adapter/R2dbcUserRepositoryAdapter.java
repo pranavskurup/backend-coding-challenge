@@ -1,6 +1,7 @@
 package com.movie.rating.system.infrastructure.outbound.persistence.adapter;
 
 import com.movie.rating.system.domain.entity.User;
+import com.movie.rating.system.domain.port.outbound.UserRepository;
 import com.movie.rating.system.infrastructure.outbound.persistence.mapper.UserEntityMapper;
 import com.movie.rating.system.infrastructure.outbound.persistence.repository.R2dbcUserRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,7 @@ import java.util.UUID;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class R2dbcUserRepositoryAdapter {
+public class R2dbcUserRepositoryAdapter implements UserRepository {
 
     private final R2dbcUserRepository repository;
     private final UserEntityMapper mapper;
@@ -35,7 +36,7 @@ public class R2dbcUserRepositoryAdapter {
     @Transactional
     public Mono<User> save(User user) {
         log.debug("Saving user with username: {}", user.getUsername());
-        
+
         return repository.save(mapper.toEntity(user))
                 .map(mapper::toDomain)
                 .doOnSuccess(savedUser -> log.debug("Successfully saved user with ID: {}", savedUser.getId()))
@@ -51,12 +52,12 @@ public class R2dbcUserRepositoryAdapter {
     @Transactional
     public Mono<User> update(User user) {
         log.debug("Updating user with ID: {}", user.getId());
-        
+
         // Set updated timestamp
         User updatedUser = user.toBuilder()
                 .updatedAt(Instant.now())
                 .build();
-        
+
         return repository.save(mapper.toEntity(updatedUser))
                 .map(mapper::toDomain)
                 .doOnSuccess(result -> log.debug("Successfully updated user with ID: {}", result.getId()))
@@ -71,7 +72,7 @@ public class R2dbcUserRepositoryAdapter {
      */
     public Mono<User> findById(UUID id) {
         log.debug("Finding user by ID: {}", id);
-        
+
         return repository.findById(id)
                 .map(mapper::toDomain)
                 .doOnSuccess(user -> {
@@ -92,7 +93,7 @@ public class R2dbcUserRepositoryAdapter {
      */
     public Mono<User> findByUsername(String username) {
         log.debug("Finding user by username: {}", username);
-        
+
         return repository.findByUsername(username)
                 .map(mapper::toDomain)
                 .doOnSuccess(user -> {
@@ -113,7 +114,7 @@ public class R2dbcUserRepositoryAdapter {
      */
     public Mono<User> findByEmail(String email) {
         log.debug("Finding user by email: {}", email);
-        
+
         return repository.findByEmail(email)
                 .map(mapper::toDomain)
                 .doOnSuccess(user -> {
@@ -134,7 +135,7 @@ public class R2dbcUserRepositoryAdapter {
      */
     public Mono<Boolean> existsByUsername(String username) {
         log.debug("Checking if user exists by username: {}", username);
-        
+
         return repository.existsByUsername(username)
                 .doOnSuccess(exists -> log.debug("User exists by username {}: {}", username, exists))
                 .doOnError(error -> log.error("Error checking user existence by username: {}", username, error));
@@ -148,7 +149,7 @@ public class R2dbcUserRepositoryAdapter {
      */
     public Mono<Boolean> existsByEmail(String email) {
         log.debug("Checking if user exists by email: {}", email);
-        
+
         return repository.existsByEmail(email)
                 .doOnSuccess(exists -> log.debug("User exists by email {}: {}", email, exists))
                 .doOnError(error -> log.error("Error checking user existence by email: {}", email, error));
@@ -161,7 +162,7 @@ public class R2dbcUserRepositoryAdapter {
      */
     public Flux<User> findAll() {
         log.debug("Finding all users");
-        
+
         return repository.findAll()
                 .map(mapper::toDomain)
                 .doOnComplete(() -> log.debug("Successfully retrieved all users"))
@@ -175,7 +176,7 @@ public class R2dbcUserRepositoryAdapter {
      */
     public Flux<User> findAllActive() {
         log.debug("Finding all active users");
-        
+
         return repository.findAllActiveUsers()
                 .map(mapper::toDomain)
                 .doOnComplete(() -> log.debug("Successfully retrieved all active users"))
@@ -189,7 +190,7 @@ public class R2dbcUserRepositoryAdapter {
      */
     public Mono<Long> countActiveUsers() {
         log.debug("Counting active users");
-        
+
         return repository.countActiveUsers()
                 .doOnSuccess(count -> log.debug("Active user count: {}", count))
                 .doOnError(error -> log.error("Error counting active users", error));
@@ -204,7 +205,7 @@ public class R2dbcUserRepositoryAdapter {
     @Transactional
     public Mono<Void> deleteById(UUID id) {
         log.debug("Deleting user by ID: {}", id);
-        
+
         return repository.deleteById(id)
                 .doOnSuccess(result -> log.debug("Successfully deleted user with ID: {}", id))
                 .doOnError(error -> log.error("Failed to delete user with ID: {}", id, error));
@@ -219,7 +220,7 @@ public class R2dbcUserRepositoryAdapter {
     @Transactional
     public Mono<Void> delete(User user) {
         log.debug("Deleting user with ID: {}", user.getId());
-        
+
         return repository.delete(mapper.toEntity(user))
                 .doOnSuccess(result -> log.debug("Successfully deleted user with ID: {}", user.getId()))
                 .doOnError(error -> log.error("Failed to delete user with ID: {}", user.getId(), error));
