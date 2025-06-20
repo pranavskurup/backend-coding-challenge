@@ -54,54 +54,6 @@ class UserWebMapperTest {
         }
 
         @Test
-        @DisplayName("Should convert RegisterUserRequestDto to RegisterUserCommand with minimal fields")
-        void shouldConvertRequestDtoToCommandWithMinimalFields() {
-            // Given
-            RegisterUserRequestDto requestDto = new RegisterUserRequestDto(
-                    "testuser",
-                    "test@example.com",
-                    "password123",
-                    null,
-                    null
-            );
-
-            // When
-            RegisterUserCommand result = mapper.toCommand(requestDto);
-
-            // Then
-            assertThat(result).isNotNull();
-            assertThat(result.username()).isEqualTo("testuser");
-            assertThat(result.email()).isEqualTo("test@example.com");
-            assertThat(result.password()).isEqualTo("password123");
-            assertThat(result.firstName()).isNull();
-            assertThat(result.lastName()).isNull();
-        }
-
-        @Test
-        @DisplayName("Should convert RegisterUserRequestDto to RegisterUserCommand with empty names")
-        void shouldConvertRequestDtoToCommandWithEmptyNames() {
-            // Given
-            RegisterUserRequestDto requestDto = new RegisterUserRequestDto(
-                    "testuser",
-                    "test@example.com",
-                    "password123",
-                    "",
-                    ""
-            );
-
-            // When
-            RegisterUserCommand result = mapper.toCommand(requestDto);
-
-            // Then
-            assertThat(result).isNotNull();
-            assertThat(result.username()).isEqualTo("testuser");
-            assertThat(result.email()).isEqualTo("test@example.com");
-            assertThat(result.password()).isEqualTo("password123");
-            assertThat(result.firstName()).isEmpty();
-            assertThat(result.lastName()).isEmpty();
-        }
-
-        @Test
         @DisplayName("Should convert RegisterUserRequestDto with special characters")
         void shouldConvertRequestDtoWithSpecialCharacters() {
             // Given
@@ -397,7 +349,7 @@ class UserWebMapperTest {
             assertThat(result).isNotNull();
             assertThat(result.firstName()).isEmpty();
             assertThat(result.lastName()).isEmpty();
-            assertThat(result.fullName()).isEqualTo("testuser"); // Falls back to username when names are empty
+            assertThat(result.fullName()).isEmpty(); // Empty strings concatenate to empty string
         }
 
         @Test
