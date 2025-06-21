@@ -11,6 +11,7 @@ import com.movie.rating.system.infrastructure.inbound.web.dto.request.UpdateUser
 import com.movie.rating.system.infrastructure.inbound.web.dto.response.ErrorResponseDto;
 import com.movie.rating.system.infrastructure.inbound.web.dto.response.OperationSuccessResponseDto;
 import com.movie.rating.system.infrastructure.inbound.web.mapper.UserProfileWebMapper;
+import com.movie.rating.system.infrastructure.inbound.web.util.AuthenticationUtils;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
@@ -43,6 +44,7 @@ public class UserProfileHandler {
 
     /**
      * Get user profile by ID.
+     * Only allows users to access their own profile.
      *
      * @param request the HTTP request
      * @return ServerResponse containing user profile or error
@@ -51,15 +53,16 @@ public class UserProfileHandler {
         log.info("Received get user profile request");
         
         return extractUserIdFromPath(request)
-                .flatMap(userId -> {
-                    log.debug("Getting profile for user ID: {}", userId);
-                    return manageUserProfileUseCase.getUserProfile(userId);
-                })
-                .map(userProfileWebMapper::toProfileResponseDto)
-                .flatMap(profile ->
-                        ServerResponse.ok()
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .body(BodyInserters.fromValue(profile))
+                .flatMap(userId -> 
+                    AuthenticationUtils.ensureUserAccess(request, userId,
+                        manageUserProfileUseCase.getUserProfile(userId)
+                                .map(userProfileWebMapper::toProfileResponseDto)
+                                .flatMap(profile ->
+                                        ServerResponse.ok()
+                                                .contentType(MediaType.APPLICATION_JSON)
+                                                .body(BodyInserters.fromValue(profile))
+                                )
+                    )
                 )
                 .onErrorResume(this::handleProfileError)
                 .doFinally(signalType -> log.info("Get user profile request completed"));
@@ -67,6 +70,7 @@ public class UserProfileHandler {
 
     /**
      * Update user profile.
+     * Only allows users to update their own profile.
      *
      * @param request the HTTP request
      * @return ServerResponse containing updated profile or error
@@ -76,6 +80,7 @@ public class UserProfileHandler {
         
         return extractUserIdFromPath(request)
                 .flatMap(userId ->
+                    AuthenticationUtils.ensureUserAccess(request, userId,
                         request.bodyToMono(UpdateUserProfileRequestDto.class)
                                 .flatMap(this::validateUpdateProfileRequest)
                                 .flatMap(requestDto -> {
@@ -90,12 +95,13 @@ public class UserProfileHandler {
                                     log.debug("Updating profile for user ID: {} with command: {}", userId, command);
                                     return manageUserProfileUseCase.updateUserProfile(command);
                                 })
-                )
-                .map(userProfileWebMapper::toProfileResponseDto)
-                .flatMap(profile ->
-                        ServerResponse.ok()
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .body(BodyInserters.fromValue(profile))
+                                .map(userProfileWebMapper::toProfileResponseDto)
+                                .flatMap(profile ->
+                                        ServerResponse.ok()
+                                                .contentType(MediaType.APPLICATION_JSON)
+                                                .body(BodyInserters.fromValue(profile))
+                                )
+                    )
                 )
                 .onErrorResume(this::handleProfileError)
                 .doFinally(signalType -> log.info("Update user profile request completed"));
@@ -103,6 +109,7 @@ public class UserProfileHandler {
 
     /**
      * Change user password.
+     * Only allows users to change their own password.
      *
      * @param request the HTTP request
      * @return ServerResponse indicating success or error
@@ -112,6 +119,7 @@ public class UserProfileHandler {
         
         return extractUserIdFromPath(request)
                 .flatMap(userId ->
+                    AuthenticationUtils.ensureUserAccess(request, userId,
                         request.bodyToMono(ChangePasswordRequestDto.class)
                                 .flatMap(this::validateChangePasswordRequest)
                                 .flatMap(requestDto -> {
@@ -119,12 +127,13 @@ public class UserProfileHandler {
                                     log.debug("Changing password for user ID: {}", userId);
                                     return manageUserProfileUseCase.changePassword(command);
                                 })
-                )
-                .then(ServerResponse.ok()
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .body(BodyInserters.fromValue(
-                                OperationSuccessResponseDto.ofSuccess("Password changed successfully")
-                        ))
+                                .then(ServerResponse.ok()
+                                        .contentType(MediaType.APPLICATION_JSON)
+                                        .body(BodyInserters.fromValue(
+                                                OperationSuccessResponseDto.ofSuccess("Password changed successfully")
+                                        ))
+                                )
+                    )
                 )
                 .onErrorResume(this::handleProfileError)
                 .doFinally(signalType -> log.info("Change password request completed"));
@@ -132,6 +141,7 @@ public class UserProfileHandler {
 
     /**
      * Deactivate user account.
+     * Only allows users to deactivate their own account.
      *
      * @param request the HTTP request
      * @return ServerResponse indicating success or error
@@ -140,15 +150,16 @@ public class UserProfileHandler {
         log.info("Received deactivate user request");
         
         return extractUserIdFromPath(request)
-                .flatMap(userId -> {
-                    log.debug("Deactivating user ID: {}", userId);
-                    return manageUserProfileUseCase.deactivateUser(userId);
-                })
-                .then(ServerResponse.ok()
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .body(BodyInserters.fromValue(
-                                OperationSuccessResponseDto.ofSuccess("User deactivated successfully")
-                        ))
+                .flatMap(userId ->
+                    AuthenticationUtils.ensureUserAccess(request, userId,
+                        manageUserProfileUseCase.deactivateUser(userId)
+                                .then(ServerResponse.ok()
+                                        .contentType(MediaType.APPLICATION_JSON)
+                                        .body(BodyInserters.fromValue(
+                                                OperationSuccessResponseDto.ofSuccess("User deactivated successfully")
+                                        ))
+                                )
+                    )
                 )
                 .onErrorResume(this::handleProfileError)
                 .doFinally(signalType -> log.info("Deactivate user request completed"));
@@ -156,6 +167,7 @@ public class UserProfileHandler {
 
     /**
      * Reactivate user account.
+     * Only allows users to reactivate their own account.
      *
      * @param request the HTTP request
      * @return ServerResponse containing reactivated user profile or error
@@ -164,15 +176,16 @@ public class UserProfileHandler {
         log.info("Received reactivate user request");
         
         return extractUserIdFromPath(request)
-                .flatMap(userId -> {
-                    log.debug("Reactivating user ID: {}", userId);
-                    return manageUserProfileUseCase.reactivateUser(userId);
-                })
-                .map(userProfileWebMapper::toProfileResponseDto)
-                .flatMap(profile ->
-                        ServerResponse.ok()
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .body(BodyInserters.fromValue(profile))
+                .flatMap(userId ->
+                    AuthenticationUtils.ensureUserAccess(request, userId,
+                        manageUserProfileUseCase.reactivateUser(userId)
+                                .map(userProfileWebMapper::toProfileResponseDto)
+                                .flatMap(profile ->
+                                        ServerResponse.ok()
+                                                .contentType(MediaType.APPLICATION_JSON)
+                                                .body(BodyInserters.fromValue(profile))
+                                )
+                    )
                 )
                 .onErrorResume(this::handleProfileError)
                 .doFinally(signalType -> log.info("Reactivate user request completed"));

@@ -94,7 +94,50 @@ class UserProfileHandlerTest {
 
         webTestClient = WebTestClient
                 .bindToRouterFunction(routes)
+                .webFilter(createTestAuthenticationFilter())
                 .build();
+    }
+    
+    /**
+     * Create a test authentication filter that mocks user authentication
+     */
+    private org.springframework.web.server.WebFilter createTestAuthenticationFilter() {
+        return (exchange, chain) -> {
+            // Extract user ID from path variable if present
+            String path = exchange.getRequest().getURI().getPath();
+            if (path.contains("/users/")) {
+                String[] pathParts = path.split("/users/");
+                if (pathParts.length > 1) {
+                    String userIdPart = pathParts[1].split("/")[0];
+                    if (!userIdPart.equals("search")) { // Handle search endpoint
+                        try {
+                            UUID userId = UUID.fromString(userIdPart);
+                            // Mock authentication for the requested user
+                            exchange.getAttributes().put("userId", userId);
+                            exchange.getAttributes().put("username", "testuser");
+                            exchange.getAttributes().put("email", "test@example.com");
+                        } catch (IllegalArgumentException e) {
+                            // For invalid UUID in path, set a default test user
+                            // The handler will validate the UUID format itself and return appropriate error
+                            exchange.getAttributes().put("userId", UUID.randomUUID());
+                            exchange.getAttributes().put("username", "testuser");
+                            exchange.getAttributes().put("email", "test@example.com");
+                        }
+                    } else {
+                        // For search endpoint, use a default test user
+                        exchange.getAttributes().put("userId", UUID.randomUUID());
+                        exchange.getAttributes().put("username", "testuser");
+                        exchange.getAttributes().put("email", "test@example.com");
+                    }
+                }
+            } else {
+                // For non-user specific endpoints, set default authentication
+                exchange.getAttributes().put("userId", UUID.randomUUID());
+                exchange.getAttributes().put("username", "testuser");
+                exchange.getAttributes().put("email", "test@example.com");
+            }
+            return chain.filter(exchange);
+        };
     }
 
     @Nested
