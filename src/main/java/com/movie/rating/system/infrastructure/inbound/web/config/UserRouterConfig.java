@@ -30,7 +30,7 @@ public class UserRouterConfig {
     public RouterFunction<ServerResponse> userRoutes() {
         return RouterFunctions.route()
                 // User registration
-                .POST("/api/v1/users/register",
+                .POST("/api/v1/auth/register",
                       accept(MediaType.APPLICATION_JSON)
                           .and(contentType(MediaType.APPLICATION_JSON)),
                       userHandler::registerUser)

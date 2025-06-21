@@ -60,7 +60,7 @@ class UserHandlerTest {
         userHandler = new UserHandler(registerUserUseCase, userWebMapper, validator);
 
         RouterFunction<ServerResponse> routes = RouterFunctions.route()
-                .POST("/api/v1/users/register",
+                .POST("/api/v1/auth/register",
                         accept(MediaType.APPLICATION_JSON)
                                 .and(contentType(MediaType.APPLICATION_JSON)),
                         userHandler::registerUser)
@@ -95,7 +95,7 @@ class UserHandlerTest {
 
         // When & Then
         webTestClient.post()
-                .uri("/api/v1/users/register")
+                .uri("/api/v1/auth/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(requestDto)
                 .exchange()
@@ -127,7 +127,7 @@ class UserHandlerTest {
 
         // When & Then
         webTestClient.post()
-                .uri("/api/v1/users/register")
+                .uri("/api/v1/auth/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(requestDto)
                 .exchange()
@@ -152,7 +152,7 @@ class UserHandlerTest {
 
         // When & Then
         webTestClient.post()
-                .uri("/api/v1/users/register")
+                .uri("/api/v1/auth/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(requestDto)
                 .exchange()
