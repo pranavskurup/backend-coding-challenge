@@ -46,12 +46,12 @@ class FlywayMigrationTest {
         var result = flyway.migrate();
         int migrationsExecuted = result.migrationsExecuted;
 
-        // Verify that all 2 migrations were executed
-        assertEquals(2, migrationsExecuted, "Expected 1 migrations to be executed");
+        // Verify that all 4 migrations were executed
+        assertEquals(4, migrationsExecuted, "Expected 4 migrations to be executed");
 
         // Verify migration info
         var migrationInfo = flyway.info();
-        assertEquals(2, migrationInfo.all().length, "Expected 2 total migrations");
-        assertEquals(2, migrationInfo.applied().length, "Expected 2 applied migrations");
+        assertEquals(4, migrationInfo.all().length, "Expected 4 total migrations");
+        assertEquals(4, migrationInfo.applied().length, "Expected 4 applied migrations");
     }
 }
