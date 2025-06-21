@@ -149,7 +149,21 @@ public class R2dbcJwtTokenRepositoryAdapter implements JwtTokenRepository {
     public Mono<Long> countActiveTokensForUser(UUID userId) {
         log.debug("Counting active tokens for user: {}", userId);
         
-        return r2dbcRepository.countActiveTokensForUser(userId, Instant.now())
-                .doOnSuccess(count -> log.debug("User {} has {} active tokens", userId, count));
+        return countActiveTokensForUserAt(userId, Instant.now());
+    }
+    
+    /**
+     * Count active tokens for a user at a specific point in time.
+     * This method allows for more precise timing control, particularly useful for testing.
+     * 
+     * @param userId the user ID
+     * @param atTime the time to check token activity against
+     * @return count of active tokens
+     */
+    public Mono<Long> countActiveTokensForUserAt(UUID userId, Instant atTime) {
+        log.debug("Counting active tokens for user: {} at time: {}", userId, atTime);
+        
+        return r2dbcRepository.countActiveTokensForUser(userId, atTime)
+                .doOnSuccess(count -> log.debug("User {} has {} active tokens at {}", userId, count, atTime));
     }
 }
