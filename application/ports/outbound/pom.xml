@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.movierating.application</groupId>
+		<artifactId>movierating-application-ports</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+	<groupId>com.movierating.application.ports</groupId>
+	<artifactId>movierating-application-ports-outbound</artifactId>
+	<name>Movie Rating Application Ports</name>
+	<description>Movie Rating Application Ports - Inbound and outbound port definitions</description>
+	<packaging>pom</packaging>
+
+	<modules>
+		<module>auth</module>
+		<module>movie</module>
+		<module>rating</module>
+		<module>user</module>
+	</modules>
+</project>

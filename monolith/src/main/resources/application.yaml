@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: movierating-monolith
+server:
+  port: 8580

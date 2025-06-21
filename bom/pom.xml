@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.movierating</groupId>
+	<artifactId>movierating-bom</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>Movie Rating BOM</name>
+	<description>Movie Rating Bill of Materials - Dependency management for movie rating application modules</description>
+
+	<properties>
+		<spring-cloud.version>2025.0.0</spring-cloud.version>
+		<movierating.version>0.0.1-SNAPSHOT</movierating.version>
+		
+		<!-- Core Module Versions -->
+		<movierating-domain.version>${movierating.version}</movierating-domain.version>
+		<movierating-application.version>${movierating.version}</movierating-application.version>
+		<movierating-infrastructure.version>${movierating.version}</movierating-infrastructure.version>
+		<movierating-services.version>${movierating.version}</movierating-services.version>
+		<movierating-gateway.version>${movierating.version}</movierating-gateway.version>
+		<movierating-monolith.version>${movierating.version}</movierating-monolith.version>
+		<movierating-flyway.version>${movierating.version}</movierating-flyway.version>
+		
+		<!-- Application Ports Versions -->
+		<movierating-application-ports.version>${movierating.version}</movierating-application-ports.version>
+		<movierating-application-ports-inbound.version>${movierating.version}</movierating-application-ports-inbound.version>
+		<movierating-application-ports-outbound.version>${movierating.version}</movierating-application-ports-outbound.version>
+		
+		<!-- Infrastructure Adapter Versions -->
+		<movierating-infrastructure-adapter.version>${movierating.version}</movierating-infrastructure-adapter.version>
+		<movierating-infrastructure-adapter-inbound.version>${movierating.version}</movierating-infrastructure-adapter-inbound.version>
+		<movierating-infrastructure-adapter-outbound.version>${movierating.version}</movierating-infrastructure-adapter-outbound.version>
+		
+		<!-- Service Versions -->
+		<movierating-service-auth.version>${movierating.version}</movierating-service-auth.version>
+		<movierating-service-movie.version>${movierating.version}</movierating-service-movie.version>
+		<movierating-service-rating.version>${movierating.version}</movierating-service-rating.version>
+		<movierating-service-user.version>${movierating.version}</movierating-service-user.version>
+		
+		<!-- Application Ports Individual Module Versions -->
+		<movierating-application-ports-inbound-auth.version>${movierating.version}</movierating-application-ports-inbound-auth.version>
+		<movierating-application-ports-inbound-movie.version>${movierating.version}</movierating-application-ports-inbound-movie.version>
+		<movierating-application-ports-inbound-rating.version>${movierating.version}</movierating-application-ports-inbound-rating.version>
+		<movierating-application-ports-inbound-user.version>${movierating.version}</movierating-application-ports-inbound-user.version>
+		
+		<movierating-application-ports-outbound-auth.version>${movierating.version}</movierating-application-ports-outbound-auth.version>
+		<movierating-application-ports-outbound-movie.version>${movierating.version}</movierating-application-ports-outbound-movie.version>
+		<movierating-application-ports-outbound-rating.version>${movierating.version}</movierating-application-ports-outbound-rating.version>
+		<movierating-application-ports-outbound-user.version>${movierating.version}</movierating-application-ports-outbound-user.version>
+		
+		<!-- Infrastructure Adapter Individual Module Versions -->
+		<movierating-infrastructure-adapter-inbound-auth.version>${movierating.version}</movierating-infrastructure-adapter-inbound-auth.version>
+		<movierating-infrastructure-adapter-inbound-movie.version>${movierating.version}</movierating-infrastructure-adapter-inbound-movie.version>
+		<movierating-infrastructure-adapter-inbound-rating.version>${movierating.version}</movierating-infrastructure-adapter-inbound-rating.version>
+		<movierating-infrastructure-adapter-inbound-user.version>${movierating.version}</movierating-infrastructure-adapter-inbound-user.version>
+		
+		<movierating-infrastructure-adapter-outbound-auth.version>${movierating.version}</movierating-infrastructure-adapter-outbound-auth.version>
+		<movierating-infrastructure-adapter-outbound-movie.version>${movierating.version}</movierating-infrastructure-adapter-outbound-movie.version>
+		<movierating-infrastructure-adapter-outbound-rating.version>${movierating.version}</movierating-infrastructure-adapter-outbound-rating.version>
+		<movierating-infrastructure-adapter-outbound-user.version>${movierating.version}</movierating-infrastructure-adapter-outbound-user.version>
+	</properties>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-dependencies</artifactId>
+				<version>${spring-cloud.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+			
+			<!-- Core Modules -->
+			<dependency>
+				<groupId>com.movierating</groupId>
+				<artifactId>movierating-domain</artifactId>
+				<version>${movierating-domain.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.movierating</groupId>
+				<artifactId>movierating-application</artifactId>
+				<version>${movierating-application.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.movierating</groupId>
+				<artifactId>movierating-infrastructure</artifactId>
+				<version>${movierating-infrastructure.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.movierating</groupId>
+				<artifactId>movierating-services</artifactId>
+				<version>${movierating-services.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.movierating</groupId>
+				<artifactId>movierating-gateway</artifactId>
+				<version>${movierating-gateway.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.movierating</groupId>
+				<artifactId>movierating-monolith</artifactId>
+				<version>${movierating-monolith.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.movierating</groupId>
+				<artifactId>movierating-flyway</artifactId>
+				<version>${movierating-flyway.version}</version>
+			</dependency>
+			
+			<!-- Application Ports -->
+			<dependency>
+				<groupId>com.movierating.application</groupId>
+				<artifactId>movierating-application-ports</artifactId>
+				<version>${movierating-application-ports.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.movierating.application.ports</groupId>
+				<artifactId>movierating-application-ports-inbound</artifactId>
+				<version>${movierating-application-ports-inbound.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.movierating.application.ports</groupId>
+				<artifactId>movierating-application-ports-outbound</artifactId>
+				<version>${movierating-application-ports-outbound.version}</version>
+			</dependency>
+			
+			<!-- Application Ports Inbound Individual Modules -->
+			<dependency>
+				<groupId>com.movierating.application.ports.inbound</groupId>
+				<artifactId>movierating-application-ports-inbound-auth</artifactId>
+				<version>${movierating-application-ports-inbound-auth.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.movierating.application.ports.inbound</groupId>
+				<artifactId>movierating-application-ports-inbound-movie</artifactId>
+				<version>${movierating-application-ports-inbound-movie.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.movierating.application.ports.inbound</groupId>
+				<artifactId>movierating-application-ports-inbound-rating</artifactId>
+				<version>${movierating-application-ports-inbound-rating.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.movierating.application.ports.inbound</groupId>
+				<artifactId>movierating-application-ports-inbound-user</artifactId>
+				<version>${movierating-application-ports-inbound-user.version}</version>
+			</dependency>
+			
+			<!-- Application Ports Outbound Individual Modules -->
+			<dependency>
+				<groupId>com.movierating.application.ports.outbound</groupId>
+				<artifactId>movierating-application-ports-outbound-auth</artifactId>
+				<version>${movierating-application-ports-outbound-auth.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.movierating.application.ports.outbound</groupId>
+				<artifactId>movierating-application-ports-outbound-movie</artifactId>
+				<version>${movierating-application-ports-outbound-movie.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.movierating.application.ports.outbound</groupId>
+				<artifactId>movierating-application-ports-outbound-rating</artifactId>
+				<version>${movierating-application-ports-outbound-rating.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.movierating.application.ports.outbound</groupId>
+				<artifactId>movierating-application-ports-outbound-user</artifactId>
+				<version>${movierating-application-ports-outbound-user.version}</version>
+			</dependency>
+			
+			<!-- Infrastructure Adapters -->
+			<dependency>
+				<groupId>com.movierating.infrastructure</groupId>
+				<artifactId>movierating-infrastructure-adapter</artifactId>
+				<version>${movierating-infrastructure-adapter.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.movierating.infrastructure.adapter</groupId>
+				<artifactId>movierating-infrastructure-adapter-inbound</artifactId>
+				<version>${movierating-infrastructure-adapter-inbound.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.movierating.infrastructure.adapter</groupId>
+				<artifactId>movierating-infrastructure-adapter-outbound</artifactId>
+				<version>${movierating-infrastructure-adapter-outbound.version}</version>
+			</dependency>
+			
+			<!-- Infrastructure Adapter Inbound Individual Modules -->
+			<dependency>
+				<groupId>com.movierating.infrastructure.adapter.inbound</groupId>
+				<artifactId>movierating-infrastructure-adapter-inbound-auth</artifactId>
+				<version>${movierating-infrastructure-adapter-inbound-auth.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.movierating.infrastructure.adapter.inbound</groupId>
+				<artifactId>movierating-infrastructure-adapter-inbound-movie</artifactId>
+				<version>${movierating-infrastructure-adapter-inbound-movie.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.movierating.infrastructure.adapter.inbound</groupId>
+				<artifactId>movierating-infrastructure-adapter-inbound-rating</artifactId>
+				<version>${movierating-infrastructure-adapter-inbound-rating.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.movierating.infrastructure.adapter.inbound</groupId>
+				<artifactId>movierating-infrastructure-adapter-inbound-user</artifactId>
+				<version>${movierating-infrastructure-adapter-inbound-user.version}</version>
+			</dependency>
+			
+			<!-- Infrastructure Adapter Outbound Individual Modules -->
+			<dependency>
+				<groupId>com.movierating.infrastructure.adapter.outbound</groupId>
+				<artifactId>movierating-infrastructure-adapter-outbound-auth</artifactId>
+				<version>${movierating-infrastructure-adapter-outbound-auth.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.movierating.infrastructure.adapter.outbound</groupId>
+				<artifactId>movierating-infrastructure-adapter-outbound-movie</artifactId>
+				<version>${movierating-infrastructure-adapter-outbound-movie.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.movierating.infrastructure.adapter.outbound</groupId>
+				<artifactId>movierating-infrastructure-adapter-outbound-rating</artifactId>
+				<version>${movierating-infrastructure-adapter-outbound-rating.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.movierating.infrastructure.adapter.outbound</groupId>
+				<artifactId>movierating-infrastructure-adapter-outbound-user</artifactId>
+				<version>${movierating-infrastructure-adapter-outbound-user.version}</version>
+			</dependency>
+			
+			<!-- Services -->
+			<dependency>
+				<groupId>com.movierating.services</groupId>
+				<artifactId>movierating-service-auth</artifactId>
+				<version>${movierating-service-auth.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.movierating.services</groupId>
+				<artifactId>movierating-service-movie</artifactId>
+				<version>${movierating-service-movie.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.movierating.services</groupId>
+				<artifactId>movierating-service-rating</artifactId>
+				<version>${movierating-service-rating.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.movierating.services</groupId>
+				<artifactId>movierating-service-user</artifactId>
+				<version>${movierating-service-user.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
+</project>

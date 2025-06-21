@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: movierating-movie-service
+server:
+  port: 8682

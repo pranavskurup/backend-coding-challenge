@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: movierating-auth-service
+server:
+  port: 8681
