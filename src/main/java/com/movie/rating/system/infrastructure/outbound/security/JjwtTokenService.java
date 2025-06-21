@@ -32,7 +32,6 @@ import java.util.UUID;
  */
 @Slf4j
 @Service
-@RequiredArgsConstructor
 public class JjwtTokenService implements JwtTokenService {
 
     private final JwtTokenRepository jwtTokenRepository;
@@ -73,8 +72,8 @@ public class JjwtTokenService implements JwtTokenService {
                     .compact();
 
             // Determine token type from custom claims
-            JwtToken.TokenType tokenType = "refresh".equals(customClaims.get("token_type")) 
-                    ? JwtToken.TokenType.REFRESH 
+            JwtToken.TokenType tokenType = "refresh".equals(customClaims.get("token_type"))
+                    ? JwtToken.TokenType.REFRESH
                     : JwtToken.TokenType.ACCESS;
 
             // Save token to database for blacklisting
@@ -123,7 +122,7 @@ public class JjwtTokenService implements JwtTokenService {
             customClaims.remove("email");
 
             TokenClaims tokenClaims = new TokenClaims(userId, username, email, issuedAt, expiresAt, customClaims);
-            
+
             log.debug("Successfully validated JWT token for user: {}", username);
             return Mono.just(tokenClaims);
         } catch (ExpiredJwtException e) {
@@ -138,7 +137,7 @@ public class JjwtTokenService implements JwtTokenService {
     @Override
     public Mono<TokenClaims> validateTokenWithBlacklist(String token) {
         String tokenHash = hashToken(token);
-        
+
         return jwtTokenRepository.isTokenRevoked(tokenHash)
                 .flatMap(isRevoked -> {
                     if (isRevoked) {
@@ -208,7 +207,7 @@ public class JjwtTokenService implements JwtTokenService {
     @Override
     public Mono<Void> blacklistToken(String token, String reason) {
         String tokenHash = hashToken(token);
-        
+
         return jwtTokenRepository.revokeByTokenHash(tokenHash, reason)
                 .then()
                 .doOnSuccess(v -> log.debug("Successfully blacklisted token with reason: {}", reason))
@@ -220,7 +219,7 @@ public class JjwtTokenService implements JwtTokenService {
         if (token == null) {
             token = ""; // Convert null to empty string for consistent hashing
         }
-        
+
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hash = digest.digest(token.getBytes(StandardCharsets.UTF_8));
