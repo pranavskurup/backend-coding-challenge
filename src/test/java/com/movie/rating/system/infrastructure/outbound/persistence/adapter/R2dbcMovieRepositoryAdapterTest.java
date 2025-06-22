@@ -365,7 +365,7 @@ class R2dbcMovieRepositoryAdapterTest {
     void shouldCountMoviesByCreator() {
         // Given
         Long expectedCount = 5L;
-        when(r2dbcRepository.countByCreatedByAndIsActiveTrue(userId)).thenReturn(Mono.just(expectedCount));
+        when(r2dbcRepository.countAllByCreatedBy(userId)).thenReturn(Mono.just(expectedCount));
 
         // When
         Mono<Long> result = adapter.countByCreatedBy(userId);
@@ -375,7 +375,25 @@ class R2dbcMovieRepositoryAdapterTest {
                 .expectNext(expectedCount)
                 .verifyComplete();
 
-        verify(r2dbcRepository).countByCreatedByAndIsActiveTrue(userId);
+        verify(r2dbcRepository).countAllByCreatedBy(userId);
+    }
+
+    @Test
+    @DisplayName("Should count active movies by creator")
+    void shouldCountActiveMoviesByCreator() {
+        // Given
+        Long expectedCount = 3L;
+        when(r2dbcRepository.countActiveByCreatedBy(userId)).thenReturn(Mono.just(expectedCount));
+
+        // When
+        Mono<Long> result = adapter.countActiveByCreatedBy(userId);
+
+        // Then
+        StepVerifier.create(result)
+                .expectNext(expectedCount)
+                .verifyComplete();
+
+        verify(r2dbcRepository).countActiveByCreatedBy(userId);
     }
 
     @Test

@@ -117,6 +117,14 @@ public interface MovieRepository {
     Mono<Long> countByCreatedBy(UUID userId);
 
     /**
+     * Count active movies created by a specific user.
+     *
+     * @param userId the user ID
+     * @return Mono containing the count of active movies created by the user
+     */
+    Mono<Long> countActiveByCreatedBy(UUID userId);
+
+    /**
      * Find movies with pagination support.
      *
      * @param offset the number of records to skip

@@ -155,9 +155,18 @@ public class R2dbcMovieRepositoryAdapter implements MovieRepository {
     public Mono<Long> countByCreatedBy(UUID userId) {
         log.debug("Counting movies created by user: {}", userId);
         
-        return r2dbcRepository.countByCreatedByAndIsActiveTrue(userId)
+        return r2dbcRepository.countAllByCreatedBy(userId)
                 .doOnSuccess(count -> log.debug("Movies created by user {} count: {}", userId, count))
                 .doOnError(error -> log.error("Failed to count movies by creator: {}", userId, error));
+    }
+
+    @Override
+    public Mono<Long> countActiveByCreatedBy(UUID userId) {
+        log.debug("Counting active movies created by user: {}", userId);
+        
+        return r2dbcRepository.countActiveByCreatedBy(userId)
+                .doOnSuccess(count -> log.debug("Active movies created by user {} count: {}", userId, count))
+                .doOnError(error -> log.error("Failed to count active movies by creator: {}", userId, error));
     }
 
     @Override

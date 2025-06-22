@@ -105,6 +105,12 @@ public interface R2dbcMovieRepository extends R2dbcRepository<MovieEntity, UUID>
     Mono<Long> countAllByCreatedBy(@Param("createdBy") UUID createdBy);
 
     /**
+     * Count active movies created by a specific user.
+     */
+    @Query("SELECT COUNT(*) FROM movies WHERE created_by = :createdBy AND is_active = true")
+    Mono<Long> countActiveByCreatedBy(@Param("createdBy") UUID createdBy);
+
+    /**
      * Count inactive movies created by a specific user.
      */
     @Query("SELECT COUNT(*) FROM movies WHERE created_by = :createdBy AND is_active = false")
