@@ -368,7 +368,9 @@ sequenceDiagram
     H-->>C: 204 No Content
 ```
 
-### Admin User Management Flows
+### User Management Flows (Public Discovery)
+
+> **TODO**: Admin-specific workflows (user role management, admin-only operations) are not fully implemented due to time constraints. The current implementation treats all authenticated users equally for user discovery features. In a production system, admin roles would control access to user management operations.
 
 ```mermaid
 sequenceDiagram
@@ -398,11 +400,11 @@ sequenceDiagram
     H->>H: check each user - full profile for self, limited for others
     H-->>C: 200 + mixed profile data (full for self, limited for others)
 
-    Note over C,DB: Reactivate User (Admin Only)
+    Note over C,DB: Reactivate User (Self-Service Only)
     C->>R: POST /api/v1/users/{userId}/reactivate (with JWT)
     R->>H: reactivateUser(userId)
-    H->>S: reactivateUser(userId, adminId)
-    S->>S: validate admin permissions
+    H->>S: reactivateUser(userId, requesterId)
+    S->>S: validate user can reactivate own account
     S->>DB: reactivate user
     DB-->>S: user reactivated
     S-->>H: success response
@@ -424,3 +426,39 @@ sequenceDiagram
 - ✅ Movie CRUD
 - ✅ Rating system
 - ✅ API documentation
+
+## Implementation Notes
+
+### Completed Features
+- ✅ User authentication with JWT (access/refresh tokens)
+- ✅ User registration and profile management
+- ✅ Movie CRUD operations with ownership validation
+- ✅ Movie rating system with duplicate prevention
+- ✅ Privacy-aware user profile access (full for self, limited for others)
+- ✅ Reactive programming with Spring WebFlux
+- ✅ Clean architecture with domain-driven design
+- ✅ Comprehensive API documentation with OpenAPI/Swagger
+- ✅ Database migrations with Flyway
+- ✅ Unit and integration tests
+
+### TODO / Not Implemented (Time Constraints)
+- ❌ **Admin Role System**: No role-based access control implemented
+  - All authenticated users have same permissions
+  - Admin-specific endpoints exist but don't enforce admin roles
+  - Future: Implement User roles (ADMIN, USER) with proper authorization
+- ❌ **Caching Layer**: No Redis/cache implementation for performance
+  - Movie ratings, user profiles could benefit from caching
+  - Future: Add Redis for frequently accessed data
+- ❌ **Advanced Search**: Basic search only
+  - Movie search by genre, rating range, actor not implemented
+  - User search only by username pattern
+  - Future: Implement Elasticsearch or advanced SQL queries
+- ❌ **Pagination**: Limited pagination support
+  - Some endpoints return all results without pagination
+  - Future: Implement consistent pagination across all list endpoints
+- ❌ **Rate Limiting**: No API rate limiting implemented
+  - Future: Add rate limiting to prevent abuse
+- ❌ **Email Notifications**: No email service integration
+  - Future: Send welcome emails, password reset notifications
+- ❌ **Audit Logging**: Basic logging only, no audit trail
+  - Future: Implement comprehensive audit logging for all operations
