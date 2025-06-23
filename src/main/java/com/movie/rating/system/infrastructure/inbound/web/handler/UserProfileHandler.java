@@ -44,7 +44,9 @@ public class UserProfileHandler {
 
     /**
      * Get user profile by ID.
-     * Only allows users to access their own profile.
+     * If the authenticated user is requesting their own profile, returns full profile data.
+     * If the authenticated user is requesting another user's profile, returns only public information
+     * (firstName, lastName, username).
      *
      * @param request the HTTP request
      * @return ServerResponse containing user profile or error
@@ -53,17 +55,29 @@ public class UserProfileHandler {
         log.info("Received get user profile request");
         
         return extractUserIdFromPath(request)
-                .flatMap(userId -> 
-                    AuthenticationUtils.ensureUserAccess(request, userId,
-                        manageUserProfileUseCase.getUserProfile(userId)
-                                .map(userProfileWebMapper::toProfileResponseDto)
-                                .flatMap(profile ->
-                                        ServerResponse.ok()
-                                                .contentType(MediaType.APPLICATION_JSON)
-                                                .body(BodyInserters.fromValue(profile))
-                                )
-                    )
-                )
+                .flatMap(userId -> {
+                    UUID authenticatedUserId = AuthenticationUtils.getAuthenticatedUserId(request);
+                    
+                    // Check if user is accessing their own profile
+                    boolean isOwnProfile = authenticatedUserId != null && authenticatedUserId.equals(userId);
+                    
+                    return manageUserProfileUseCase.getUserProfile(userId)
+                            .flatMap(user -> {
+                                if (isOwnProfile) {
+                                    // Return full profile data for own profile
+                                    var fullProfile = userProfileWebMapper.toProfileResponseDto(user);
+                                    return ServerResponse.ok()
+                                            .contentType(MediaType.APPLICATION_JSON)
+                                            .body(BodyInserters.fromValue(fullProfile));
+                                } else {
+                                    // Return limited profile data for other users
+                                    var limitedProfile = userProfileWebMapper.toLimitedProfileResponseDto(user);
+                                    return ServerResponse.ok()
+                                            .contentType(MediaType.APPLICATION_JSON)
+                                            .body(BodyInserters.fromValue(limitedProfile));
+                                }
+                            });
+                })
                 .onErrorResume(this::handleProfileError)
                 .doFinally(signalType -> log.info("Get user profile request completed"));
     }
@@ -192,16 +206,27 @@ public class UserProfileHandler {
     }
 
     /**
-     * Get all active users (admin operation).
+     * Get all active users.
+     * Returns full profile for authenticated user, limited profile for others.
      *
      * @param request the HTTP request
-     * @return ServerResponse containing list of active users or error
+     * @return ServerResponse containing list of active users with appropriate profile data
      */
     public Mono<ServerResponse> getAllActiveUsers(ServerRequest request) {
         log.info("Received get all active users request");
         
+        UUID authenticatedUserId = AuthenticationUtils.getAuthenticatedUserId(request);
+        
         return manageUserProfileUseCase.getAllActiveUsers()
-                .map(userProfileWebMapper::toProfileResponseDto)
+                .map(user -> {
+                    // Return full profile for authenticated user, limited profile for others
+                    boolean isOwnProfile = authenticatedUserId != null && authenticatedUserId.equals(user.getId());
+                    if (isOwnProfile) {
+                        return userProfileWebMapper.toProfileResponseDto(user);
+                    } else {
+                        return userProfileWebMapper.toLimitedProfileResponseDto(user);
+                    }
+                })
                 .collectList()
                 .flatMap(profiles ->
                         ServerResponse.ok()
@@ -214,20 +239,31 @@ public class UserProfileHandler {
 
     /**
      * Search users by username pattern.
+     * Returns full profile for authenticated user, limited profile for others.
      *
      * @param request the HTTP request
-     * @return ServerResponse containing matching users or error
+     * @return ServerResponse containing matching users with appropriate profile data
      */
     public Mono<ServerResponse> searchUsersByUsername(ServerRequest request) {
         log.info("Received search users request");
         
-        String pattern = request.queryParam("pattern")
+        String pattern = request.queryParam("username")
                 .orElse("");
         
-        log.debug("Searching users with pattern: {}", pattern);
+        log.debug("Searching users with username pattern: {}", pattern);
+        
+        UUID authenticatedUserId = AuthenticationUtils.getAuthenticatedUserId(request);
         
         return manageUserProfileUseCase.searchUsersByUsername(pattern)
-                .map(userProfileWebMapper::toProfileResponseDto)
+                .map(user -> {
+                    // Return full profile for authenticated user, limited profile for others
+                    boolean isOwnProfile = authenticatedUserId != null && authenticatedUserId.equals(user.getId());
+                    if (isOwnProfile) {
+                        return userProfileWebMapper.toProfileResponseDto(user);
+                    } else {
+                        return userProfileWebMapper.toLimitedProfileResponseDto(user);
+                    }
+                })
                 .collectList()
                 .flatMap(profiles ->
                         ServerResponse.ok()

@@ -5,6 +5,7 @@ import com.movie.rating.system.domain.port.inbound.ManageUserProfileUseCase.Chan
 import com.movie.rating.system.domain.port.inbound.ManageUserProfileUseCase.UpdateUserProfileCommand;
 import com.movie.rating.system.infrastructure.inbound.web.dto.request.ChangePasswordRequestDto;
 import com.movie.rating.system.infrastructure.inbound.web.dto.request.UpdateUserProfileRequestDto;
+import com.movie.rating.system.infrastructure.inbound.web.dto.response.LimitedUserProfileResponseDto;
 import com.movie.rating.system.infrastructure.inbound.web.dto.response.UserProfileResponseDto;
 import org.springframework.stereotype.Component;
 
@@ -77,6 +78,27 @@ public class UserProfileWebMapper {
                 user.getCreatedAt(),
                 user.getUpdatedAt(),
                 user.getDeactivatedAt()
+        );
+    }
+
+    /**
+     * Converts User entity to LimitedUserProfileResponseDto.
+     * Used when other users request a user's profile - only shows public information.
+     *
+     * @param user the user entity
+     * @return LimitedUserProfileResponseDto
+     */
+    public LimitedUserProfileResponseDto toLimitedProfileResponseDto(User user) {
+        if (user == null) {
+            return null;
+        }
+        
+        return new LimitedUserProfileResponseDto(
+                user.getId(),
+                user.getUsername(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getFullName()
         );
     }
 }

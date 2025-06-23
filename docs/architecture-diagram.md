@@ -186,15 +186,25 @@ sequenceDiagram
     S-->>H: availability status
     H-->>C: 200 + {available: true/false}
 
-    Note over C,DB: Get User Profile
-    C->>R: GET /api/v1/users/{userId}/profile (with JWT)
+    Note over C,DB: Get User Profile (Own Profile)
+    C->>R: GET /api/v1/users/{userId}/profile (with JWT, own ID)
     R->>H: getUserProfile(userId)
     H->>S: getUserProfile(userId, requesterId)
-    S->>S: validate access permissions
+    S->>S: check if requesting own profile
     S->>DB: find user by id
     DB-->>S: user data
-    S-->>H: user profile
-    H-->>C: 200 + profile data
+    S-->>H: full user profile (including email, etc.)
+    H-->>C: 200 + complete profile data
+
+    Note over C,DB: Get User Profile (Other User)
+    C->>R: GET /api/v1/users/{userId}/profile (with JWT, other user ID)
+    R->>H: getUserProfile(userId)
+    H->>S: getUserProfile(userId, requesterId)
+    S->>S: check if requesting other user's profile
+    S->>DB: find user by id
+    DB-->>S: user data
+    S-->>H: limited user profile (firstName, lastName, username only)
+    H-->>C: 200 + limited profile data
 
     Note over C,DB: Update User Profile
     C->>R: PUT /api/v1/users/{userId}/profile (with JWT)
@@ -368,35 +378,27 @@ sequenceDiagram
     participant S as Service
     participant DB as Database
 
-    Note over C,DB: Get All Users (Admin)
+    Note over C,DB: Get All Users (Mixed Profile Data)
     C->>R: GET /api/v1/users (with JWT)
-    R->>H: getAllUsers(request)
-    H->>S: getAllActiveUsers(page, size)
-    S->>DB: find active users with pagination
+    R->>H: getAllActiveUsers(request)
+    H->>S: getAllActiveUsers()
+    S->>DB: find active users
     DB-->>S: users list
-    S-->>H: paginated users
-    H-->>C: 200 + users + pagination
+    S-->>H: users data
+    H->>H: check each user - full profile for self, limited for others
+    H-->>C: 200 + mixed profile data (full for self, limited for others)
 
-    Note over C,DB: Search Users by Username
-    C->>R: GET /api/v1/users/search?username=john
+    Note over C,DB: Search Users by Username (Mixed Profile Data)
+    C->>R: GET /api/v1/users/search?username=john (with JWT)
     R->>H: searchUsersByUsername(username)
     H->>S: searchByUsername(username)
-    S->>DB: find users where username contains
+    S->>DB: find users where username contains pattern
     DB-->>S: matching users
-    S-->>H: search results
-    H-->>C: 200 + matching users
+    S-->>H: users data
+    H->>H: check each user - full profile for self, limited for others
+    H-->>C: 200 + mixed profile data (full for self, limited for others)
 
-    Note over C,DB: Deactivate User
-    C->>R: DELETE /api/v1/users/{userId} (with JWT)
-    R->>H: deactivateUser(userId)
-    H->>S: deactivateUser(userId, adminId)
-    S->>S: validate admin permissions
-    S->>DB: deactivate user
-    DB-->>S: user deactivated
-    S-->>H: success response
-    H-->>C: 204 No Content
-
-    Note over C,DB: Reactivate User
+    Note over C,DB: Reactivate User (Admin Only)
     C->>R: POST /api/v1/users/{userId}/reactivate (with JWT)
     R->>H: reactivateUser(userId)
     H->>S: reactivateUser(userId, adminId)

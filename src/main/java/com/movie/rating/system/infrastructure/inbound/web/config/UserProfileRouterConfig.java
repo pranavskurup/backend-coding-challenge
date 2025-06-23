@@ -44,21 +44,21 @@ public class UserProfileRouterConfig {
             operation = @Operation(
                 operationId = "getUserProfile",
                 summary = "Get user profile",
-                description = "Retrieve user profile information by user ID. Users can only access their own profile.",
+                description = "Retrieve user profile information by user ID. Returns full profile data (including email, timestamps, etc.) when accessing own profile. Returns limited profile data (only firstName, lastName, username, id, fullName) when accessing other users' profiles.",
                 tags = {"User Profile - Secured"},
                 security = @SecurityRequirement(name = "bearerAuth"),
                 parameters = @Parameter(name = "userId", in = ParameterIn.PATH, description = "User ID", required = true),
                 responses = {
                     @ApiResponse(
                         responseCode = "200", 
-                        description = "Profile retrieved successfully",
+                        description = "Profile retrieved successfully - full data for own profile, limited data for others",
                         content = @Content(
                             mediaType = "application/json",
-                            schema = @Schema(implementation = com.movie.rating.system.infrastructure.inbound.web.dto.response.UserProfileResponseDto.class)
+                            schema = @Schema(implementation = com.movie.rating.system.infrastructure.inbound.web.dto.response.FlexibleUserProfileResponseDto.class)
                         )
                     ),
                     @ApiResponse(responseCode = "401", description = "Unauthorized"),
-                    @ApiResponse(responseCode = "403", description = "Forbidden - can only access own profile"),
+                    @ApiResponse(responseCode = "403", description = "Forbidden - access denied"),
                     @ApiResponse(responseCode = "404", description = "User not found")
                 }
             )
@@ -180,8 +180,8 @@ public class UserProfileRouterConfig {
             operation = @Operation(
                 operationId = "getAllActiveUsers",
                 summary = "Get all active users",
-                description = "Retrieve all active users in the system. Admin operation.",
-                tags = {"User Profile - Admin"},
+                description = "Retrieve all active users in the system. Returns full profile information for the authenticated user's own profile, and limited profile information (username, firstName, lastName) for other users.",
+                tags = {"User Profile - Secured"},
                 security = @SecurityRequirement(name = "bearerAuth"),
                 responses = {
                     @ApiResponse(
@@ -189,11 +189,14 @@ public class UserProfileRouterConfig {
                         description = "Users retrieved successfully",
                         content = @Content(
                             mediaType = "application/json",
-                            schema = @Schema(type = "array", implementation = com.movie.rating.system.infrastructure.inbound.web.dto.response.UserResponseDto.class)
+                            schema = @Schema(
+                                type = "array", 
+                                description = "Array of user profiles - full profile for authenticated user, limited profile for others",
+                                implementation = com.movie.rating.system.infrastructure.inbound.web.dto.response.FlexibleUserProfileResponseDto.class
+                            )
                         )
                     ),
-                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
-                    @ApiResponse(responseCode = "403", description = "Forbidden - admin only")
+                    @ApiResponse(responseCode = "401", description = "Unauthorized")
                 }
             )
         ),
@@ -203,8 +206,8 @@ public class UserProfileRouterConfig {
             operation = @Operation(
                 operationId = "searchUsersByUsername",
                 summary = "Search users by username",
-                description = "Search for users by username pattern. Admin operation.",
-                tags = {"User Profile - Admin"},
+                description = "Search for users by username pattern. Returns full profile information for the authenticated user's own profile if found, and limited profile information (username, firstName, lastName) for other users.",
+                tags = {"User Profile - Secured"},
                 security = @SecurityRequirement(name = "bearerAuth"),
                 parameters = @Parameter(
                     name = "username", 
@@ -218,12 +221,15 @@ public class UserProfileRouterConfig {
                         description = "Search completed",
                         content = @Content(
                             mediaType = "application/json",
-                            schema = @Schema(type = "array", implementation = com.movie.rating.system.infrastructure.inbound.web.dto.response.UserResponseDto.class)
+                            schema = @Schema(
+                                type = "array", 
+                                description = "Array of user profiles - full profile for authenticated user, limited profile for others",
+                                implementation = com.movie.rating.system.infrastructure.inbound.web.dto.response.FlexibleUserProfileResponseDto.class
+                            )
                         )
                     ),
                     @ApiResponse(responseCode = "400", description = "Invalid search parameters"),
-                    @ApiResponse(responseCode = "401", description = "Unauthorized"),
-                    @ApiResponse(responseCode = "403", description = "Forbidden - admin only")
+                    @ApiResponse(responseCode = "401", description = "Unauthorized")
                 }
             )
         )
