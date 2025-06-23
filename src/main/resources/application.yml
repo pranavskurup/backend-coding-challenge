@@ -1,0 +1,34 @@
+spring:
+  application:
+    name: movie-rating-system
+
+  # Database Configuration
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/movierating
+    username: movierating
+    password: movierating
+
+  # Flyway Configuration
+  flyway:
+    url: jdbc:postgresql://localhost:5432/movierating
+    user: movierating
+    password: movierating
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+
+# Application Configuration
+app:
+  jwt:
+    secret: ${JWT_SECRET:mySecretKey123456789012345678901234567890123456789012345678901234567890}
+    issuer: ${JWT_ISSUER:movie-rating-system}
+    access-token-duration: ${JWT_ACCESS_TOKEN_DURATION:PT1H}  # 1 hour
+    refresh-token-duration: ${JWT_REFRESH_TOKEN_DURATION:P7D}  # 7 days
+    cleanup:
+      retention-period: ${JWT_CLEANUP_RETENTION_PERIOD:P30D}  # 30 days
+
+# Logging Configuration
+logging:
+  level:
+    org.flywaydb: INFO
+    io.r2dbc.postgresql.QUERY: DEBUG
+    io.r2dbc.postgresql.PARAM: DEBUG
